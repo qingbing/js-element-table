@@ -51,7 +51,7 @@
 
     <section class="page-wrapper" v-if="!isEmpty(pagination)">
       <el-pagination
-        layout="prev, pager, next, jumper, ->, total"
+        :layout="paginationLayout"
         :total="pagination.total"
         :hide-on-single-page="true"
         @current-change="pageChange"
@@ -147,6 +147,11 @@ export default {
       type: Object,
       default: undefined,
     },
+    // 分页组件布局
+    paginationLayout: {
+      type: String,
+      default: "total,prev,pager,next,jumper",
+    },
   },
   data() {
     // 分页参数规范
@@ -194,6 +199,7 @@ export default {
   },
   methods: {
     isEmpty,
+    // 为数据添加序号
     addIdx(res) {
       let firstIdx = 0;
       if (isObject(this.pagination)) {
@@ -207,6 +213,7 @@ export default {
         }
       });
     },
+    // 重刷 table 数据
     refreshTable() {
       this.getTableData((res) => {
         let flag = true;
@@ -225,28 +232,16 @@ export default {
         }
       });
     },
+    // 改变了 pageNo
     pageChange(curPage) {
       this.pagination.pageNo = curPage;
       this.refreshTable();
     },
+    // 改变了 pageSize
     sizeChange(curSize) {
       this.pagination.pageSize = curSize;
       this.refreshTable();
     },
-  },
-  watch: {
-    // "pagination.pageNo": {
-    //   handler() {
-    //     this.refreshTable();
-    //   },
-    //   deep: true,
-    // },
-    // "pagination.pageSize": {
-    //   handler() {
-    //     this.refreshTable();
-    //   },
-    //   deep: true,
-    // },
   },
 };
 </script>
