@@ -1,57 +1,78 @@
 <template>
-  <el-table
-    :data="tableData"
-    :style="{ width: tableWidth }"
-    :stripe="stripe"
-    :border="border"
-    :row-class-name="rowClass"
-    :height="tableHeight"
-    :max-height="maxHeight"
-    :empty-text="emptyText"
-    :tooltip-effect="tooltipEffect"
-  >
-    <template v-for="item in headers">
-      <!-- 当表头设置了 component 时，在 scope 中使用 component 的形式，组件名为 item.component 设置的值 -->
-      <el-table-column
-        v-if="item.component"
-        :key="'' + uniqid + item.name"
-        :prop="item.name"
-        :label="item.label"
-        :width="isEmpty(item.width) ? 'auto' : item.width"
-        :fixed="item.fixed ? item.fixed : false"
-        :align="item.align ? item.align : 'center'"
-        :show-overflow-tooltip="item.tooltip ? item.tooltip : false"
-        :resizable="item.resizable ? item.resizable : false"
+  <div>
+    <el-table
+      :data="tableData"
+      :style="{ width: tableWidth }"
+      :stripe="stripe"
+      :border="border"
+      :row-class-name="rowClass"
+      :height="tableHeight"
+      :max-height="maxHeight"
+      :empty-text="emptyText"
+      :tooltip-effect="tooltipEffect"
+    >
+      <template v-for="item in headers">
+        <!-- 当表头设置了 component 时，在 scope 中使用 component 的形式，组件名为 item.component 设置的值 -->
+        <el-table-column
+          v-if="item.component"
+          :key="'' + uniqid + item.name"
+          :prop="item.name"
+          :label="item.label"
+          :width="isEmpty(item.width) ? 'auto' : item.width"
+          :fixed="item.fixed ? item.fixed : false"
+          :align="item.align ? item.align : 'center'"
+          :show-overflow-tooltip="item.tooltip ? item.tooltip : false"
+          :resizable="item.resizable ? item.resizable : false"
+        >
+          <template slot-scope="scope">
+            <component
+              :is="item.component"
+              :scope="scope"
+              :index="scope.$index"
+              :property="scope.column.property"
+              :row="scope.row"
+            ></component>
+          </template>
+        </el-table-column>
+        <!-- 常规的显示 -->
+        <el-table-column
+          v-else
+          :key="'' + uniqid + item.name"
+          :prop="item.name"
+          :label="item.label"
+          :width="isEmpty(item.width) ? 'auto' : item.width"
+          :fixed="item.fixed ? item.fixed : false"
+          :align="item.align ? item.align : 'center'"
+          :show-overflow-tooltip="item.tooltip ? item.tooltip : false"
+          :resizable="item.resizable ? item.resizable : false"
+        ></el-table-column>
+      </template>
+    </el-table>
+
+    <section class="page-wrapper" v-if="!isEmpty(pagination)">
+      <el-pagination
+        layout="prev, pager, next, jumper, ->, total"
+        :total="pagination.total"
+        :hide-on-single-page="true"
+        @current-change="pageChange"
+        @size-change="sizeChange"
       >
-        <template slot-scope="scope">
-          <component
-            :is="item.component"
-            :scope="scope"
-            :index="scope.$index"
-            :property="scope.column.property"
-            :row="scope.row"
-          ></component>
-        </template>
-      </el-table-column>
-      <!-- 常规的显示 -->
-      <el-table-column
-        v-else
-        :key="'' + uniqid + item.name"
-        :prop="item.name"
-        :label="item.label"
-        :width="isEmpty(item.width) ? 'auto' : item.width"
-        :fixed="item.fixed ? item.fixed : false"
-        :align="item.align ? item.align : 'center'"
-        :show-overflow-tooltip="item.tooltip ? item.tooltip : false"
-        :resizable="item.resizable ? item.resizable : false"
-      ></el-table-column>
-    </template>
-  </el-table>
+      </el-pagination>
+    </section>
+  </div>
 </template>
 
 <script>
 // 导入包
-import { isEmpty, isFunction, uniqid, each, dump } from "@qingbing/helper";
+import {
+  isEmpty,
+  isUndefined,
+  isObject,
+  isFunction,
+  uniqid,
+  each,
+  dump,
+} from "@qingbing/helper";
 
 // 导出
 export default {
@@ -77,9 +98,7 @@ export default {
     // table 是否需要竖直方向的边框
     rowClass: {
       type: Function,
-      default: () => {
-        return ""; // red
-      },
+      default: () => "",
     },
     // table 是否需要竖直方向的边框
     tableHeight: {
@@ -107,38 +126,43 @@ export default {
     // 组件唯一标志符
     uniqid: {
       type: String,
-      default: () => {
-        return uniqid();
-      },
+      default: () => uniqid(),
+    },
+    // 数据渲染前的处理函数
+    beforeRender: {
+      type: Function,
     },
     // 标题栏
     getHeaders: {
       type: Function,
       required: true,
     },
-    // 标题栏
+    // 获取数据
     getTableData: {
       type: Function,
       required: true,
     },
-    // 数据渲染前的处理函数
-    beforeRender: {
-      type: Function,
-    },
+    // 分页信息
     pagination: {
-      type: Boolean,
-      default: false,
-    },
-    pageNo: {
-      type: Number,
-      default: 1,
-    },
-    pageSize: {
-      type: Number,
-      default: 10,
+      type: Object,
+      default: undefined,
     },
   },
   data() {
+    // 分页参数规范
+    if (isObject(this.pagination)) {
+      this.pagination.pageNo = this.pagination.pageNo ?? 1;
+      this.pagination.pageSize = this.pagination.pageSize ?? 10;
+      if (this.pagination.pageNo < 1) {
+        this.pagination.pageNo = 1;
+      }
+      if (this.pagination.pageSize < 1) {
+        this.pagination.pageSize = 1;
+      }
+      if (this.pagination.total < 0) {
+        this.pagination.total = 0;
+      }
+    }
     this.getHeaders((res) => {
       // 计算并保存真正的 header
       const headers = {};
@@ -156,21 +180,25 @@ export default {
         headers[re.name];
       });
       this.headers = res;
-      // header 处理完后处理初始化数据
-      this.getTableData((res) => {
-        this.addIdx(res);
-        this.tableData = res;
-      });
+      // header 处理完后刷新数据列表
+      this.refreshTable();
     });
-    return {
-      headers: {},
-      tableData: [],
-    };
+    const R = {};
+    if (isUndefined(this.headers)) {
+      R.headers = {};
+    }
+    if (isUndefined(this.tableData)) {
+      R.tableData = [];
+    }
+    return R;
   },
   methods: {
     isEmpty,
     addIdx(res) {
-      const firstIdx = this.pagination ? (this.pageNo - 1) * this.pageSize : 0;
+      let firstIdx = 0;
+      if (isObject(this.pagination)) {
+        firstIdx = (this.pagination.pageNo - 1) * this.pagination.pageSize;
+      }
       const hasBeforeRender = isFunction(this.beforeRender);
       each(res, (item, idx) => {
         item._idx = firstIdx + parseInt(idx) + 1;
@@ -179,6 +207,51 @@ export default {
         }
       });
     },
+    refreshTable() {
+      this.getTableData((res) => {
+        let flag = true;
+        if (isObject(this.pagination)) {
+          if (isUndefined(res.total)) {
+            flag = false;
+            dump.error("分页返回结果中必须包含总条数 total");
+          } else {
+            this.pagination.total = parseInt(res.total);
+            res = res.data;
+          }
+        }
+        if (flag) {
+          this.addIdx(res);
+          this.tableData = res;
+        }
+      });
+    },
+    pageChange(curPage) {
+      this.pagination.pageNo = curPage;
+      this.refreshTable();
+    },
+    sizeChange(curSize) {
+      this.pagination.pageSize = curSize;
+      this.refreshTable();
+    },
+  },
+  watch: {
+    // "pagination.pageNo": {
+    //   handler() {
+    //     this.refreshTable();
+    //   },
+    //   deep: true,
+    // },
+    // "pagination.pageSize": {
+    //   handler() {
+    //     this.refreshTable();
+    //   },
+    //   deep: true,
+    // },
   },
 };
 </script>
+<style scoped>
+.page-wrapper {
+  padding: 10px 20px;
+}
+</style>
