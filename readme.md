@@ -17,10 +17,10 @@ npm install @qingbing/element-table
 |:---|:---|:---|:---|:---|:---|
 | getHeaders | 属性 | Function | 是 | - | 获取标题栏 |
 | getTableData | 属性 | Function | 是 | - | 获取数据 |
-| tableWidth | 属性 | String | 否 | 100% | table 宽度 |
 | stripe | 属性 | Boolean | 否 | true | table 是否带斑马纹 |
 | border | 属性 | Boolean | 否 | true | table 边框表格 |
 | rowClass | 属性 | Function | 否 | "" | table 行添加 class |
+| tableWidth | 属性 | String | 否 | undefined | table 宽度 |
 | tableHeight | 属性 | String | 否 | undefined | table 高度 |
 | maxHeight | 属性 | String | 否 | undefined | table 最大高度 |
 | emptyText | 属性 | String | 否 | 暂无数据 | 空数据时显示的文本内容 |

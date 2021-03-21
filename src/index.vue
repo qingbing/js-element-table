@@ -82,11 +82,6 @@ export default {
     /**
      * 表格配置
      */
-    // table 宽度
-    tableWidth: {
-      type: String,
-      default: "100%",
-    },
     // table 是否带斑马纹
     stripe: {
       type: Boolean,
@@ -101,6 +96,11 @@ export default {
     rowClass: {
       type: Function,
       default: () => "",
+    },
+    // table 宽度
+    tableWidth: {
+      type: String,
+      default: undefined,
     },
     // table 高度
     tableHeight: {
