@@ -15,6 +15,8 @@ npm install @qingbing/element-table
 
 | 参数名 | 参数类型 | 数据类型 | 必填 | 默认 | 描述 |
 |:---|:---|:---|:---|:---|:---|
+| getHeaders | 属性 | Function | 是 | - | 获取标题栏 |
+| getTableData | 属性 | Function | 是 | - | 获取数据 |
 | tableWidth | 属性 | String | 否 | 100% | table 宽度 |
 | stripe | 属性 | Boolean | 否 | true | table 是否带斑马纹 |
 | border | 属性 | Boolean | 否 | true | table 边框表格 |
@@ -25,8 +27,6 @@ npm install @qingbing/element-table
 | tooltipEffect | 属性 | String | 否 | light | tooltip effect 属性，dark/light |
 | uniqid | 属性 | String | 否 | uniqid() | 组件唯一标志符 |
 | beforeRender | 属性 | Function | 否 | - | 数据渲染前的处理函数 |
-| getHeaders | 属性 | Function | 是 | - | 获取标题栏 |
-| getTableData | 属性 | Function | 是 | - | 获取数据 |
 | pagination | 属性 | Object | 否 | undefined | 分页信息 |
 | paginationLayout | 属性 | String | 否 | total,prev,pager,next,jumper | 分页组件布局 |
 | editable | 属性 | Boolean | 否 | true | 可编辑，需要结合组件 @qingbing/element-cell-edit 使用 |
