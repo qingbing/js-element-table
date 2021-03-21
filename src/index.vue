@@ -31,6 +31,8 @@
               :index="scope.$index"
               :property="scope.column.property"
               :row="scope.row"
+              :params="item.params"
+              :editable="editable"
             ></component>
           </template>
         </el-table-column>
@@ -90,22 +92,22 @@ export default {
       type: Boolean,
       default: true,
     },
-    // table 是否需要竖直方向的边框
+    // table 边框表格
     border: {
       type: Boolean,
       default: true,
     },
-    // table 是否需要竖直方向的边框
+    // table 行添加 class
     rowClass: {
       type: Function,
       default: () => "",
     },
-    // table 是否需要竖直方向的边框
+    // table 高度
     tableHeight: {
       type: String,
       default: undefined,
     },
-    // table 是否需要竖直方向的边框
+    // table 最大高度
     maxHeight: {
       type: String,
       default: undefined,
@@ -151,6 +153,14 @@ export default {
     paginationLayout: {
       type: String,
       default: "total,prev,pager,next,jumper",
+    },
+    /**
+     * 组件配置
+     */
+    // 可编辑，需要结合组件 @qingbing/element-cell-edit 使用
+    editable: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
