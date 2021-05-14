@@ -220,8 +220,19 @@ export default {
         item._idx = firstIdx + parseInt(idx) + 1;
         if (hasBeforeRender) {
           this.beforeRender(item, idx, res);
+        } else {
+          each(this.headers, (header) => {
+            if (
+              isUndefined(item[header.name]) &&
+              !isUndefined(header.default)
+            ) {
+              item[header.name] = header.default;
+            }
+          });
         }
       });
+
+      console.log(res);
     },
     // 重刷 table 数据
     refreshTable() {
