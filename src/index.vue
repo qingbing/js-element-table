@@ -55,6 +55,7 @@
       <el-pagination
         :layout="paginationLayout"
         :total="pagination.total"
+        :page-size="pagination.pageSize"
         :hide-on-single-page="true"
         @current-change="pageChange"
         @size-change="sizeChange"
@@ -231,8 +232,6 @@ export default {
           });
         }
       });
-
-      console.log(res);
     },
     // 重刷 table 数据
     refreshTable() {
