@@ -12,9 +12,7 @@
       :tooltip-effect="tooltipEffect"
     >
       <template v-for="item in headers">
-        <!-- 当表头设置了 component 时，在 scope 中使用 component 的形式，组件名为 item.component 设置的值 -->
         <el-table-column
-          v-if="item.component"
           :key="'' + uniqid + item.name"
           :prop="item.name"
           :label="item.label"
@@ -25,7 +23,9 @@
           :resizable="item.resizable ? item.resizable : false"
         >
           <template slot-scope="scope">
+            <!-- 当表头设置了 component 时，在 scope 中使用 component 的形式，组件名为 item.component 设置的值 -->
             <component
+              v-if="item.component"
               :is="item.component"
               :scope="scope"
               :index="scope.$index"
@@ -34,20 +34,14 @@
               :params="item.params"
               :editable="editable"
             ></component>
+            <!-- header 中包含 options 时，使用标签替换显示 -->
+            <span v-else-if="isArray(item.options) || isObject(item.options)">{{
+              scope.row[scope.column.property] | col_value(item.options, "")
+            }}</span>
+            <!-- 常规的显示 -->
+            <span v-else>{{ scope.row[scope.column.property] }}</span>
           </template>
         </el-table-column>
-        <!-- 常规的显示 -->
-        <el-table-column
-          v-else
-          :key="'' + uniqid + item.name"
-          :prop="item.name"
-          :label="item.label"
-          :width="isEmpty(item.width) ? 'auto' : item.width"
-          :fixed="item.fixed ? item.fixed : false"
-          :align="item.align ? item.align : 'center'"
-          :show-overflow-tooltip="item.tooltip ? item.tooltip : false"
-          :resizable="item.resizable ? item.resizable : false"
-        ></el-table-column>
       </template>
     </el-table>
 
@@ -69,11 +63,13 @@
 // 导入包
 import {
   isEmpty,
+  isArray,
   isUndefined,
   isObject,
   isFunction,
   uniqid,
   each,
+  col_value,
   dump,
 } from "@qingbing/helper";
 
@@ -208,8 +204,13 @@ export default {
     }
     return R;
   },
+  filters: {
+    col_value: (key, vs, defaultValue) => col_value(key, vs, defaultValue),
+  },
   methods: {
     isEmpty,
+    isArray,
+    isObject,
     // 为数据添加序号
     addIdx(res) {
       let firstIdx = 0;
