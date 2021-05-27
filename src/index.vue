@@ -23,16 +23,25 @@
           :resizable="item.resizable ? item.resizable : false"
         >
           <template slot-scope="scope">
+            <!-- 当表头设置了 is_editable 时，使用 cell-table 组件 -->
+            <c-cell-table
+              v-if="item.is_editable"
+              :editable="editConfig.editable"
+              :property="scope.column.property"
+              :row="scope.row"
+              :params="item.params"
+              :saveCallback="editConfig.saveHandle"
+            >
+            </c-cell-table>
             <!-- 当表头设置了 component 时，在 scope 中使用 component 的形式，组件名为 item.component 设置的值 -->
             <component
-              v-if="item.component"
+              v-else-if="item.component"
               :is="item.component"
               :scope="scope"
               :index="scope.$index"
               :property="scope.column.property"
               :row="scope.row"
               :params="item.params"
-              :editable="editable"
             ></component>
             <!-- header 中包含 options 时，使用标签替换显示 -->
             <span v-else-if="isArray(item.options) || isObject(item.options)">{{
@@ -76,6 +85,18 @@ import {
 // 导出
 export default {
   props: {
+    /**
+     * 编辑表格配置
+     */
+    editConfig: {
+      type: Object,
+      default: () => {
+        return {
+          editable: false,
+          saveHandle: () => {},
+        };
+      },
+    },
     /**
      * 表格配置
      */
@@ -160,7 +181,20 @@ export default {
       default: true,
     },
   },
+  filters: {
+    col_value: (key, vs, defaultValue) => col_value(key, vs, defaultValue),
+  },
+  components: {
+    CCellTable: () => import("@qingbing/element-cell-edit"),
+  },
   data() {
+    if (isUndefined(this.editConfig.editable)) {
+      this.editConfig.editable = false;
+    }
+    if (!isFunction(this.editConfig.saveHandle)) {
+      this.editConfig.saveHandle = () => {};
+    }
+
     // 分页参数规范
     if (isObject(this.pagination)) {
       this.pagination.pageNo = this.pagination.pageNo ?? 1;
@@ -203,9 +237,6 @@ export default {
       R.tableData = [];
     }
     return R;
-  },
-  filters: {
-    col_value: (key, vs, defaultValue) => col_value(key, vs, defaultValue),
   },
   methods: {
     isEmpty,
