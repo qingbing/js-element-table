@@ -13,8 +13,8 @@
     >
       <template v-for="item in headers">
         <el-table-column
-          :key="'' + uniqid + item.name"
-          :prop="item.name"
+          :key="'' + uniqid + item.field"
+          :prop="item.field"
           :label="item.label"
           :width="isEmpty(item.width) ? 'auto' : item.width"
           :fixed="item.fixed ? item.fixed : false"
@@ -213,7 +213,10 @@ export default {
       // 计算并保存真正的 header
       const headers = {};
       each(res, (re, idx) => {
-        if (isEmpty(re.name) || isEmpty(re.label)) {
+        if (isEmpty(re.field)) {
+          re.field = idx;
+        }
+        if (isEmpty(re.label)) {
           dump.error(`表格组件header头 ${idx} 必须指定字段和字段名`);
         }
         if (!isEmpty(re.component)) {
@@ -223,7 +226,7 @@ export default {
           }
           this.$options.components[re.component] = com;
         }
-        headers[re.name];
+        headers[re.field];
       });
       this.headers = res;
       // header 处理完后刷新数据列表
@@ -256,10 +259,10 @@ export default {
         } else {
           each(this.headers, (header) => {
             if (
-              isUndefined(item[header.name]) &&
+              isUndefined(item[header.field]) &&
               !isUndefined(header.default)
             ) {
-              item[header.name] = header.default;
+              item[header.field] = header.default;
             }
           });
         }
