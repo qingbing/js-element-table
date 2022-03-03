@@ -259,8 +259,8 @@ export default {
         } else {
           each(this.headers, (header) => {
             if (
-              isUndefined(item[header.field]) &&
-              !isUndefined(header.default)
+              isUndefined(item[header.field]) ||
+              (isEmpty(item[header.field]) && !isUndefined(header.default))
             ) {
               item[header.field] = header.default;
             }
