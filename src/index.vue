@@ -148,10 +148,6 @@ export default {
       type: String,
       default: () => uniqid(),
     },
-    // 数据渲染前的处理函数
-    beforeRender: {
-      type: Function,
-    },
     // 标题栏
     getHeaders: {
       type: Function,
@@ -211,7 +207,6 @@ export default {
     }
     this.getHeaders((res) => {
       // 计算并保存真正的 header
-      const headers = {};
       each(res, (re, idx) => {
         if (isEmpty(re.field)) {
           re.field = idx;
@@ -226,7 +221,6 @@ export default {
           }
           this.$options.components[re.component] = com;
         }
-        headers[re.field];
       });
       this.headers = res;
       // header 处理完后刷新数据列表
@@ -251,21 +245,17 @@ export default {
       if (isObject(this.pagination)) {
         firstIdx = (this.pagination.pageNo - 1) * this.pagination.pageSize;
       }
-      const hasBeforeRender = isFunction(this.beforeRender);
       each(res, (item, idx) => {
+        this.$emit("beforeRender", item, idx);
         item._idx = firstIdx + parseInt(idx) + 1;
-        if (hasBeforeRender) {
-          this.beforeRender(item, idx, res);
-        } else {
-          each(this.headers, (header) => {
-            if (
-              isUndefined(item[header.field]) ||
-              (isEmpty(item[header.field]) && !isUndefined(header.default))
-            ) {
-              item[header.field] = header.default;
-            }
-          });
-        }
+        each(this.headers, (header) => {
+          if (
+            isUndefined(item[header.field]) ||
+            (isEmpty(item[header.field]) && !isUndefined(header.default))
+          ) {
+            item[header.field] = header.default;
+          }
+        });
       });
     },
     // 重刷 table 数据

@@ -17,13 +17,17 @@
   - 返回表头支持对象，为对象时，可以不用设置field字段
 - 1.0.7
   - 增加数据未空时，也直接显示表头设置的默认值
+- 1.0.8
+  - 将 beforeRender 做成了 $emit 消息传递
 
 ## 1. 安装
 ```
 npm install @qingbing/element-table
 ```
 
-## 2. 参数介绍
+## 2. 传递参数
+
+### 2.1 prop 参数
 
 | 参数名 | 参数类型 | 数据类型 | 必填 | 默认 | 描述 |
 |:---|:---|:---|:---|:---|:---|
@@ -38,10 +42,17 @@ npm install @qingbing/element-table
 | emptyText | 属性 | String | 否 | 暂无数据 | 空数据时显示的文本内容 |
 | tooltipEffect | 属性 | String | 否 | light | tooltip effect 属性，dark/light |
 | uniqid | 属性 | String | 否 | uniqid() | 组件唯一标志符 |
-| beforeRender | 属性 | Function | 否 | - | 数据渲染前的处理函数 |
 | pagination | 属性 | Object | 否 | undefined | 分页信息 |
 | paginationLayout | 属性 | String | 否 | total,prev,pager,next,jumper | 分页组件布局 |
 | editable | 属性 | Boolean | 否 | true | 可编辑，需要结合组件 @qingbing/element-cell-edit 使用 |
+
+### 2.2 $emit 参数
+
+| 参数名 | 参数类型 | 数据类型 | 必填 | 默认 | 描述 |
+|:---|:---|:---|:---|:---|:---|
+| beforeRender | 属性 | Function | 否 | - | 数据渲染前的处理函数 |
+
+
 
 ## 3. 使用示例
 ```vue
