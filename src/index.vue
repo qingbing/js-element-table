@@ -47,6 +47,8 @@
             <span v-else-if="isArray(item.options) || isObject(item.options)">{{
               scope.row[scope.column.property] | col_value(item.options, "")
             }}</span>
+            <!-- header 中 is_image 代表使用图片展示 -->
+            <el-image v-else-if="item.is_image" :src="scope.row[scope.column.property]" :fit="'scale-down'"></el-image>
             <!-- 常规的显示 -->
             <span v-else>{{ scope.row[scope.column.property] }}</span>
           </template>

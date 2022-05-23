@@ -19,6 +19,8 @@
   - 增加数据未空时，也直接显示表头设置的默认值
 - 1.0.8
   - 将 beforeRender 做成了 $emit 消息传递
+- 1.0.9
+  - 扩展了图片列表功能
 
 ## 1. 安装
 ```
@@ -98,10 +100,10 @@ export default {
         },
       };
       cb([
-        { name: "_idx", label: "序号", fixed: "left" },
-        { name: "date", label: "日期", width: "100", default: "0000-00-00" },
+        { field: "_idx", label: "序号", fixed: "left" },
+        { field: "date", label: "日期", width: "100", default: "0000-00-00" },
         {
-          name: "is_open",
+          field: "is_open",
           label: "是否开放",
           //   width: "100",
           component: "celledit",
@@ -110,7 +112,7 @@ export default {
           }),
         },
         {
-          name: "username",
+          field: "username",
           label: "用户名",
           component: "celledit",
           params: merge(editParams, {
@@ -118,7 +120,7 @@ export default {
           }),
         },
         {
-          name: "name",
+          field: "field",
           label: "姓名",
           width: "150",
           component: "celledit",
