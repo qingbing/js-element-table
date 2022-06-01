@@ -48,7 +48,11 @@
               scope.row[scope.column.property] | col_value(item.options, "")
             }}</span>
             <!-- header 中 is_image 代表使用图片展示 -->
-            <el-image v-else-if="item.is_image" :src="scope.row[scope.column.property]" :fit="'scale-down'"></el-image>
+            <el-image
+              v-else-if="item.is_image"
+              :src="scope.row[scope.column.property]"
+              :fit="'scale-down'"
+            ></el-image>
             <!-- 常规的显示 -->
             <span v-else>{{ scope.row[scope.column.property] }}</span>
           </template>
@@ -87,6 +91,9 @@ import {
 // 导出
 export default {
   props: {
+    parentVm: {
+      type: Object,
+    },
     /**
      * 编辑表格配置
      */
@@ -217,7 +224,13 @@ export default {
           dump.error(`表格组件header头 ${idx} 必须指定字段和字段名`);
         }
         if (!isEmpty(re.component)) {
-          const com = this.$parent.$options.components[re.component];
+          let parent;
+          if (isObject(this.parentVm)) {
+            parent = this.parentVm;
+          } else {
+            parent = this.$parent;
+          }
+          const com = parent.$options.components[re.component];
           if (isEmpty(com)) {
             dump.error(`父组件无组件 "${re.component}" 可继承`);
           }
