@@ -91,6 +91,9 @@ import {
 // 导出
 export default {
   props: {
+    /**
+     * 指定父级vm
+     */
     parentVm: {
       type: Object,
     },
@@ -162,10 +165,17 @@ export default {
       type: Function,
       required: true,
     },
+    // 指定静态数据，优先级高于 getTableData
+    staticData: {
+      type: [Array, Object],
+    },
     // 获取数据
     getTableData: {
       type: Function,
-      required: true,
+    },
+    // 指定查询数据时参数
+    params: {
+      type: Object,
     },
     // 分页信息
     pagination: {
@@ -275,22 +285,27 @@ export default {
     },
     // 重刷 table 数据
     refreshTable() {
-      this.getTableData((res) => {
-        let flag = true;
-        if (isObject(this.pagination)) {
-          if (isUndefined(res.total)) {
-            flag = false;
-            dump.error("分页返回结果中必须包含总条数 total");
-          } else {
-            this.pagination.total = parseInt(res.total);
-            res = res.data;
+      if (this.staticData) {
+        this.addIdx(this.staticData);
+        this.tableData = this.staticData;
+      } else {
+        this.getTableData((res) => {
+          let flag = true;
+          if (isObject(this.pagination)) {
+            if (isUndefined(res.total)) {
+              flag = false;
+              dump.error("分页返回结果中必须包含总条数 total");
+            } else {
+              this.pagination.total = parseInt(res.total);
+              res = res.data;
+            }
           }
-        }
-        if (flag) {
-          this.addIdx(res);
-          this.tableData = res;
-        }
-      });
+          if (flag) {
+            this.addIdx(res);
+            this.tableData = res;
+          }
+        }, this.params);
+      }
     },
     // 改变了 pageNo
     pageChange(curPage) {
